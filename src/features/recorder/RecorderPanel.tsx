@@ -55,23 +55,23 @@ export function RecorderPanel() {
   };
 
   return (
-    <div id="recorder" className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200/60 dark:border-gray-800/60 p-6 shadow-sm hover:shadow-md transition-shadow scroll-mt-20">
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+    <div id="recorder" className="scroll-mt-20">
+      <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-10">
         Record or Upload
       </h2>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         {/* Recording Controls */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-4">
           {!session || session.status === 'done' ? (
             <>
               <button
                 onClick={handleStartRecording}
-                className="flex-1 px-6 py-3 rounded-lg bg-gradient-pyro text-white font-medium hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pyro-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+                className="flex-1 px-8 py-4 rounded-lg bg-gradient-pyro text-white text-lg font-medium hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pyro-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950"
               >
-                <div className="flex items-center justify-center space-x-2">
+                <div className="flex items-center justify-center gap-3">
                   <svg
-                    className="w-5 h-5"
+                    className="w-6 h-6"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -86,11 +86,11 @@ export function RecorderPanel() {
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="flex-1 px-6 py-3 rounded-lg border-2 border-pyro-500 text-pyro-600 dark:text-pyro-400 font-medium hover:bg-pyro-50 dark:hover:bg-pyro-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pyro-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+                className="flex-1 px-8 py-4 rounded-lg border-2 border-pyro-500 text-pyro-600 dark:text-pyro-400 text-lg font-medium hover:bg-pyro-50 dark:hover:bg-pyro-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pyro-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950"
               >
-                <div className="flex items-center justify-center space-x-2">
+                <div className="flex items-center justify-center gap-3">
                   <svg
-                    className="w-5 h-5"
+                    className="w-6 h-6"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -116,12 +116,12 @@ export function RecorderPanel() {
           ) : (
             <button
               onClick={handleStopRecording}
-              className="w-full px-6 py-3 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+              className="w-full px-8 py-4 rounded-lg bg-red-600 text-white text-lg font-medium hover:bg-red-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950"
               disabled={session.status !== 'recording'}
             >
-              <div className="flex items-center justify-center space-x-2">
+              <div className="flex items-center justify-center gap-3">
                 <svg
-                  className="w-5 h-5"
+                  className="w-6 h-6"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -135,16 +135,16 @@ export function RecorderPanel() {
 
         {/* Timer and Audio Level */}
         {isRecording && (
-          <div className="space-y-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-900 rounded-lg">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <span className="text-base font-medium text-gray-600 dark:text-gray-400">
                 Recording
               </span>
-              <span className="text-2xl font-mono font-bold text-pyro-600 dark:text-pyro-400">
+              <span className="text-3xl font-mono font-bold text-pyro-600 dark:text-pyro-400">
                 {formatTime(elapsedTime)}
               </span>
             </div>
-            <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-pyro transition-all duration-150"
                 style={{ width: `${audioLevel * 100}%` }}

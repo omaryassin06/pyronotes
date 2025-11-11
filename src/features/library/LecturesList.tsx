@@ -125,25 +125,25 @@ export function LecturesList({ lectures }: LecturesListProps) {
   }
 
   return (
-    <div className="divide-y divide-gray-200 dark:divide-gray-800">
+    <div className="space-y-4">
       {lectures.map((lecture) => {
         const folderName = folders.find((f) => f.id === lecture.folderId)?.name;
 
         return (
           <div
             key={lecture.id}
-            className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            className="py-6 border-b border-gray-100 dark:border-gray-900 last:border-0"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2 mb-1">
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
+                <div className="flex items-center gap-3 mb-2">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
                     {lecture.title}
                   </h3>
                   {getStatusBadge(lecture.status)}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-base text-gray-500 dark:text-gray-400">
                   {lecture.durationSec && (
                     <span className="flex items-center">
                       <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -3,9 +3,9 @@ import { ThemeToggle } from './ThemeToggle';
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-200/60 dark:border-gray-800/60 backdrop-blur-md bg-white/70 dark:bg-gray-900/70 supports-[backdrop-filter]:bg-white/60 supports-[backdrop-filter]:dark:bg-gray-900/60">
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header className="bg-white dark:bg-gray-950">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="flex items-center justify-between py-6">
           <Link to="/" className="flex items-center space-x-2 group">
             <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-pyro">
               <svg

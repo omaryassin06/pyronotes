@@ -15,6 +15,13 @@
   --color-pyro-800: #9a3412;
   --color-pyro-900: #7c2d12;
   --color-pyro-950: #431407;
+  
+  /* Modern font system */
+  --font-sans: 'Inter var', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  
+  /* Larger base font size for readability */
+  --font-size-base: 1rem;
+  --line-height-base: 1.6;
 }
 
 /* Custom gradient backgrounds */
@@ -24,4 +31,23 @@
 
 .bg-gradient-pyro-subtle {
   background-image: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+}
+
+/* Modern font rendering */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Better default font sizing */
+body {
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+/* Larger, cleaner headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }

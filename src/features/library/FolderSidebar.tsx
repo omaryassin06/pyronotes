@@ -16,9 +16,9 @@ export function FolderSidebar() {
   };
 
   return (
-    <div className="p-4 space-y-2">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+    <div className="space-y-2">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-base font-bold text-gray-900 dark:text-white uppercase tracking-wider">
           Folders
         </h3>
         <button
@@ -35,10 +35,10 @@ export function FolderSidebar() {
       {/* All Lectures */}
       <button
         onClick={() => setSelectedFolder(null)}
-        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pyro-500 ${
+        className={`w-full flex items-center justify-between py-3 text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pyro-500 ${
           selectedFolder === null
-            ? 'bg-pyro-100 dark:bg-pyro-900 text-pyro-800 dark:text-pyro-200'
-            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+            ? 'text-pyro-600 dark:text-pyro-400 font-bold'
+            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
         }`}
       >
         <div className="flex items-center space-x-2">
@@ -58,21 +58,21 @@ export function FolderSidebar() {
       {folders.map((folder) => (
         <div
           key={folder.id}
-          className={`group flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-            selectedFolder === folder.id
-              ? 'bg-pyro-100 dark:bg-pyro-900 text-pyro-800 dark:text-pyro-200'
-              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-          }`}
+          className="group flex items-center justify-between py-3"
         >
           <button
             onClick={() => setSelectedFolder(folder.id)}
-            className="flex-1 flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pyro-500 rounded"
+            className={`flex-1 flex items-center justify-between text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pyro-500 ${
+              selectedFolder === folder.id
+                ? 'text-pyro-600 dark:text-pyro-400 font-bold'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+            }`}
           >
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <span>📁</span>
               <span className="truncate">{folder.name}</span>
             </div>
-            <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">{folder.count}</span>
+            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">{folder.count}</span>
           </button>
           <button
             onClick={() => {

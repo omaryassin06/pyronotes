@@ -28,12 +28,12 @@ export function TranscriptionStream() {
   return (
     <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800">
+      <div className="flex border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
         <button
           onClick={() => setActiveTab('transcript')}
-          className={`flex-1 px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-pyro-500 ${
+          className={`flex-1 px-6 py-4 text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-pyro-500 ${
             activeTab === 'transcript'
-              ? 'bg-white dark:bg-gray-900 text-pyro-600 dark:text-pyro-400 border-b-2 border-pyro-500'
+              ? 'bg-white dark:bg-gray-950 text-pyro-600 dark:text-pyro-400 border-b-2 border-pyro-500'
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
           }`}
         >
@@ -44,9 +44,9 @@ export function TranscriptionStream() {
         </button>
         <button
           onClick={() => setActiveTab('ai')}
-          className={`flex-1 px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-pyro-500 ${
+          className={`flex-1 px-6 py-4 text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-pyro-500 ${
             activeTab === 'ai'
-              ? 'bg-white dark:bg-gray-900 text-pyro-600 dark:text-pyro-400 border-b-2 border-pyro-500'
+              ? 'bg-white dark:bg-gray-950 text-pyro-600 dark:text-pyro-400 border-b-2 border-pyro-500'
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
           }`}
         >
@@ -60,11 +60,11 @@ export function TranscriptionStream() {
       </div>
 
       {/* Content */}
-      <div className="bg-white dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-950">
         {activeTab === 'transcript' && (
           <div
             ref={transcriptRef}
-            className="h-64 overflow-y-auto p-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed"
+            className="h-64 overflow-y-auto p-6 text-base text-gray-700 dark:text-gray-300 leading-relaxed"
             aria-live="polite"
             aria-atomic="false"
           >
@@ -81,7 +81,7 @@ export function TranscriptionStream() {
         {activeTab === 'ai' && (
           <div
             ref={aiRef}
-            className="h-64 overflow-y-auto p-4 text-sm text-gray-700 dark:text-gray-300"
+            className="h-64 overflow-y-auto p-6 text-base text-gray-700 dark:text-gray-300"
             aria-live="polite"
             aria-atomic="false"
           >

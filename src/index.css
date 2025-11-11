@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Pyro color palette */
+  --color-pyro-50: #fff7ed;
+  --color-pyro-100: #ffedd5;
+  --color-pyro-200: #fed7aa;
+  --color-pyro-300: #fdba74;
+  --color-pyro-400: #fb923c;
+  --color-pyro-500: #f97316;
+  --color-pyro-600: #ea580c;
+  --color-pyro-700: #c2410c;
+  --color-pyro-800: #9a3412;
+  --color-pyro-900: #7c2d12;
+  --color-pyro-950: #431407;
+}
+
+/* Custom gradient backgrounds */
+.bg-gradient-pyro {
+  background-image: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+}
+
+.bg-gradient-pyro-subtle {
+  background-image: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+}

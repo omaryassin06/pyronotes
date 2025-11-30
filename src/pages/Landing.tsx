@@ -39,7 +39,7 @@ export function Landing() {
 
       setGenerateResult({
         type,
-        content: result.payload?.content || 'Generated content',
+        content: result.content || 'Generated content',
         loading: false,
       });
 
@@ -49,7 +49,7 @@ export function Landing() {
         status: 'ready',
         durationSec: session.durationSec,
       });
-    } catch (error) {
+    } catch {
       setGenerateResult({
         type,
         content: '',

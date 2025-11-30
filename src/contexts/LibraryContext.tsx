@@ -1,138 +1,157 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { Lecture, Folder } from '../types';
+import { api } from '../services/api';
 
 interface LibraryContextType {
   lectures: Lecture[];
   folders: Folder[];
   selectedFolder: string | null;
-  addLecture: (lecture: Omit<Lecture, 'id' | 'createdAt'>) => void;
-  deleteLecture: (id: string) => void;
-  updateLecture: (id: string, updates: Partial<Lecture>) => void;
-  addFolder: (name: string) => void;
-  deleteFolder: (id: string) => void;
+  loading: boolean;
+  addLecture: (lecture: Omit<Lecture, 'id' | 'createdAt'>) => Promise<void>;
+  deleteLecture: (id: string) => Promise<void>;
+  updateLecture: (id: string, updates: Partial<Lecture>) => Promise<void>;
+  addFolder: (name: string) => Promise<void>;
+  deleteFolder: (id: string) => Promise<void>;
   setSelectedFolder: (id: string | null) => void;
-  addLectureToFolder: (lectureId: string, folderId: string) => void;
+  addLectureToFolder: (lectureId: string, folderId: string) => Promise<void>;
+  refreshLectures: () => Promise<void>;
 }
 
 const LibraryContext = createContext<LibraryContextType | undefined>(undefined);
 
-// Mock data
-const mockLectures: Lecture[] = [
-  {
-    id: '1',
-    title: 'Introduction to React Hooks',
-    folderId: 'f1',
-    durationSec: 1800,
-    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-    status: 'ready',
-  },
-  {
-    id: '2',
-    title: 'Advanced TypeScript Patterns',
-    folderId: 'f1',
-    durationSec: 2400,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    status: 'ready',
-  },
-  {
-    id: '3',
-    title: 'Database Design Fundamentals',
-    folderId: 'f2',
-    durationSec: 3600,
-    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-    status: 'ready',
-  },
-  {
-    id: '4',
-    title: 'Machine Learning Basics',
-    durationSec: 2700,
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-    status: 'processing',
-  },
-];
-
-const mockFolders: Folder[] = [
-  { id: 'f1', name: 'Web Development', count: 2 },
-  { id: 'f2', name: 'Computer Science', count: 1 },
-  { id: 'f3', name: 'Data Science', count: 0 },
-];
-
 export function LibraryProvider({ children }: { children: ReactNode }) {
-  const [lectures, setLectures] = useState<Lecture[]>(mockLectures);
-  const [folders, setFolders] = useState<Folder[]>(mockFolders);
+  const [lectures, setLectures] = useState<Lecture[]>([]);
+  const [folders, setFolders] = useState<Folder[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const addLecture = (lecture: Omit<Lecture, 'id' | 'createdAt'>) => {
-    const newLecture: Lecture = {
-      ...lecture,
-      id: `lecture-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-    };
-    setLectures((prev) => [newLecture, ...prev]);
-    
-    // Update folder count if applicable
-    if (lecture.folderId) {
-      setFolders((prev) =>
-        prev.map((f) => f.id === lecture.folderId ? { ...f, count: f.count + 1 } : f)
+  // Load initial data
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [lecturesData, foldersData] = await Promise.all([
+        api.getLectures(),
+        api.getFolders(),
+      ]);
+      setLectures(lecturesData);
+      setFolders(foldersData);
+    } catch (error) {
+      console.error('Failed to load library data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const refreshLectures = async () => {
+    try {
+      const lecturesData = await api.getLectures();
+      setLectures(lecturesData);
+    } catch (error) {
+      console.error('Failed to refresh lectures:', error);
+    }
+  };
+
+  const addLecture = async (lecture: Omit<Lecture, 'id' | 'createdAt'>) => {
+    try {
+      const newLecture = await api.createLecture(lecture);
+      setLectures((prev) => [newLecture, ...prev]);
+      
+      // Update folder count if applicable
+      if (lecture.folderId) {
+        setFolders((prev) =>
+          prev.map((f) => f.id === lecture.folderId ? { ...f, count: f.count + 1 } : f)
+        );
+      }
+    } catch (error) {
+      console.error('Failed to add lecture:', error);
+      throw error;
+    }
+  };
+
+  const deleteLecture = async (id: string) => {
+    try {
+      const lecture = lectures.find((l) => l.id === id);
+      await api.deleteLecture(id);
+      setLectures((prev) => prev.filter((l) => l.id !== id));
+      
+      // Update folder count if applicable
+      if (lecture?.folderId) {
+        setFolders((prev) =>
+          prev.map((f) => f.id === lecture.folderId ? { ...f, count: Math.max(0, f.count - 1) } : f)
+        );
+      }
+    } catch (error) {
+      console.error('Failed to delete lecture:', error);
+      throw error;
+    }
+  };
+
+  const updateLecture = async (id: string, updates: Partial<Lecture>) => {
+    try {
+      const updatedLecture = await api.updateLecture(id, updates);
+      setLectures((prev) =>
+        prev.map((lecture) => (lecture.id === id ? updatedLecture : lecture))
       );
+    } catch (error) {
+      console.error('Failed to update lecture:', error);
+      throw error;
     }
   };
 
-  const deleteLecture = (id: string) => {
-    const lecture = lectures.find((l) => l.id === id);
-    setLectures((prev) => prev.filter((l) => l.id !== id));
-    
-    // Update folder count if applicable
-    if (lecture?.folderId) {
-      setFolders((prev) =>
-        prev.map((f) => f.id === lecture.folderId ? { ...f, count: Math.max(0, f.count - 1) } : f)
+  const addFolder = async (name: string) => {
+    try {
+      const newFolder = await api.createFolder(name);
+      setFolders((prev) => [...prev, newFolder]);
+    } catch (error) {
+      console.error('Failed to add folder:', error);
+      throw error;
+    }
+  };
+
+  const deleteFolder = async (id: string) => {
+    try {
+      await api.deleteFolder(id);
+      
+      // Remove folder association from lectures
+      setLectures((prev) =>
+        prev.map((lecture) =>
+          lecture.folderId === id ? { ...lecture, folderId: undefined } : lecture
+        )
       );
+      setFolders((prev) => prev.filter((f) => f.id !== id));
+      if (selectedFolder === id) {
+        setSelectedFolder(null);
+      }
+    } catch (error) {
+      console.error('Failed to delete folder:', error);
+      throw error;
     }
   };
 
-  const updateLecture = (id: string, updates: Partial<Lecture>) => {
-    setLectures((prev) =>
-      prev.map((lecture) => (lecture.id === id ? { ...lecture, ...updates } : lecture))
-    );
-  };
-
-  const addFolder = (name: string) => {
-    const newFolder: Folder = {
-      id: `folder-${Date.now()}`,
-      name,
-      count: 0,
-    };
-    setFolders((prev) => [...prev, newFolder]);
-  };
-
-  const deleteFolder = (id: string) => {
-    // Remove folder association from lectures
-    setLectures((prev) =>
-      prev.map((lecture) =>
-        lecture.folderId === id ? { ...lecture, folderId: undefined } : lecture
-      )
-    );
-    setFolders((prev) => prev.filter((f) => f.id !== id));
-    if (selectedFolder === id) {
-      setSelectedFolder(null);
+  const addLectureToFolder = async (lectureId: string, folderId: string) => {
+    try {
+      const lecture = lectures.find((l) => l.id === lectureId);
+      const oldFolderId = lecture?.folderId;
+      
+      await updateLecture(lectureId, { folderId });
+      
+      // Update folder counts
+      setFolders((prev) =>
+        prev.map((f) => {
+          if (f.id === folderId) return { ...f, count: f.count + 1 };
+          if (f.id === oldFolderId) return { ...f, count: Math.max(0, f.count - 1) };
+          return f;
+        })
+      );
+    } catch (error) {
+      console.error('Failed to add lecture to folder:', error);
+      throw error;
     }
-  };
-
-  const addLectureToFolder = (lectureId: string, folderId: string) => {
-    const lecture = lectures.find((l) => l.id === lectureId);
-    const oldFolderId = lecture?.folderId;
-    
-    updateLecture(lectureId, { folderId });
-    
-    // Update folder counts
-    setFolders((prev) =>
-      prev.map((f) => {
-        if (f.id === folderId) return { ...f, count: f.count + 1 };
-        if (f.id === oldFolderId) return { ...f, count: Math.max(0, f.count - 1) };
-        return f;
-      })
-    );
   };
 
   return (
@@ -141,6 +160,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
         lectures,
         folders,
         selectedFolder,
+        loading,
         addLecture,
         deleteLecture,
         updateLecture,
@@ -148,6 +168,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
         deleteFolder,
         setSelectedFolder,
         addLectureToFolder,
+        refreshLectures,
       }}
     >
       {children}

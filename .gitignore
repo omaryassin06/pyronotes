@@ -29,3 +29,32 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+backend/venv/
+env/
+ENV/
+.venv
+
+# Backend uploads
+backend/uploads/*.webm
+backend/uploads/*.mp3
+backend/uploads/*.wav
+backend/uploads/*.m4a
+!backend/uploads/.gitkeep
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+*.swp
+*.swo
+*~

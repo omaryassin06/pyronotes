@@ -4,6 +4,7 @@ import { useLibrary } from '../../contexts/LibraryContext';
 import { GeneratePromptModal } from '../generate/GeneratePromptModal';
 import { GenerateResultPanel } from '../generate/GenerateResultPanel';
 import { ManageFolderModal } from './ManageFolderModal';
+import { AudioPlayer } from './AudioPlayer';
 import { api } from '../../services/api';
 
 interface LecturesListProps {
@@ -55,7 +56,7 @@ export function LecturesList({ lectures }: LecturesListProps) {
 
       setGenerateResult({
         type,
-        content: result.payload?.content || 'Generated content',
+        content: result.content || 'Generated content',
         loading: false,
       });
     } catch (error) {
@@ -143,7 +144,7 @@ export function LecturesList({ lectures }: LecturesListProps) {
                   {getStatusBadge(lecture.status)}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-base text-gray-500 dark:text-gray-400">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-base text-gray-500 dark:text-gray-400 mb-4">
                   {lecture.durationSec && (
                     <span className="flex items-center">
                       <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -159,6 +160,11 @@ export function LecturesList({ lectures }: LecturesListProps) {
                     </span>
                   )}
                 </div>
+
+                {/* Audio Player */}
+                {lecture.status === 'ready' && (
+                  <AudioPlayer lectureId={lecture.id} lectureTitle={lecture.title} />
+                )}
               </div>
 
               <div className="flex items-center space-x-2 ml-4">

@@ -47,10 +47,10 @@ export function SignUp() {
 
     setIsLoading(true);
     try {
-      await api.signUp(formData.email, formData.password, formData.name);
+      await api.signUp();
       // In a real app, store the token and update auth state
       navigate('/');
-    } catch (error) {
+    } catch {
       setErrors({ submit: 'Sign up failed. Please try again.' });
     } finally {
       setIsLoading(false);
@@ -232,4 +232,5 @@ export function SignUp() {
     </div>
   );
 }
+
 

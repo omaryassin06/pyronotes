@@ -1,6 +1,12 @@
+export interface LectureBuddyCard {
+  subtype: 'definition' | 'explanation';
+  term: string;
+  text: string;
+}
+
 export type StreamEvent =
   | { type: 'transcript_chunk'; text: string; ts?: number }
-  | { type: 'ai_chunk'; text: string; section?: string }
+  | { type: 'ai_chunk'; subtype: 'definition' | 'explanation'; term: string; text: string }
   | { type: 'done' }
   | { type: 'error'; message: string };
 
@@ -9,6 +15,7 @@ export interface Lecture {
   title: string;
   folderId?: string;
   durationSec?: number;
+  audioPath?: string;
   createdAt: string;
   status: 'ready' | 'processing' | 'error';
 }
@@ -21,9 +28,9 @@ export interface Folder {
 
 export interface TranscriptionSession {
   id: string;
-  status: 'idle' | 'recording' | 'uploading' | 'transcribing' | 'done' | 'error';
+  status: 'idle' | 'recording' | 'uploading' | 'transcribing' | 'done' | 'error' | 'saving';
   transcript: string;
-  aiOrganized: string;
+  aiInsights: LectureBuddyCard[];
   durationSec: number;
   startTime?: number;
 }

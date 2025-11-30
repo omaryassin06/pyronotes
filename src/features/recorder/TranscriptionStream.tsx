@@ -18,12 +18,12 @@ export function TranscriptionStream() {
     if (activeTab === 'ai' && aiRef.current) {
       aiRef.current.scrollTop = aiRef.current.scrollHeight;
     }
-  }, [session?.aiOrganized, activeTab]);
+  }, [session?.aiInsights, activeTab]);
 
   if (!session) return null;
 
   const hasTranscript = session.transcript.length > 0;
-  const hasAiOrganized = session.aiOrganized.length > 0;
+  const hasAiInsights = session.aiInsights.length > 0;
 
   return (
     <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
@@ -50,10 +50,10 @@ export function TranscriptionStream() {
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
           }`}
         >
-          AI Organized
-          {hasAiOrganized && (
+          Lecture Buddy
+          {hasAiInsights && (
             <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-semibold bg-pyro-100 dark:bg-pyro-900 text-pyro-700 dark:text-pyro-300">
-              New
+              {session.aiInsights.length}
             </span>
           )}
         </button>
@@ -81,36 +81,38 @@ export function TranscriptionStream() {
         {activeTab === 'ai' && (
           <div
             ref={aiRef}
-            className="h-64 overflow-y-auto p-6 text-base text-gray-700 dark:text-gray-300"
+            className="h-64 overflow-y-auto p-6"
             aria-live="polite"
             aria-atomic="false"
           >
-            {hasAiOrganized ? (
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                {session.aiOrganized.split('\n').map((line, i) => {
-                  if (line.startsWith('## ')) {
-                    return (
-                      <h2 key={i} className="text-lg font-semibold text-pyro-600 dark:text-pyro-400 mt-4 mb-2">
-                        {line.replace('## ', '')}
-                      </h2>
-                    );
-                  }
-                  if (line.startsWith('- ')) {
-                    return (
-                      <li key={i} className="ml-4">
-                        {line.replace('- ', '')}
-                      </li>
-                    );
-                  }
-                  if (line.trim()) {
-                    return <p key={i} className="mb-2">{line}</p>;
-                  }
-                  return null;
-                })}
+            {hasAiInsights ? (
+              <div className="space-y-3">
+                {session.aiInsights.map((card, i) => (
+                  <div
+                    key={i}
+                    className={`p-4 rounded-lg shadow-sm ${
+                      card.subtype === 'definition'
+                        ? 'bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800'
+                        : 'bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800'
+                    }`}
+                  >
+                    <h3 className={`font-semibold text-lg mb-1 ${
+                      card.subtype === 'definition'
+                        ? 'text-blue-800 dark:text-blue-200'
+                        : 'text-amber-800 dark:text-amber-200'
+                    }`}>
+                      {card.subtype === 'definition' ? 'Definition' : 'Explanation'}:{' '}
+                      <span className="font-bold">{card.term}</span>
+                    </h3>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm">
+                      {card.text}
+                    </p>
+                  </div>
+                ))}
               </div>
             ) : (
               <p className="text-gray-400 dark:text-gray-600 italic">
-                AI-organized content will appear here as it processes the transcription...
+                AI insights will appear here as you speak...
               </p>
             )}
           </div>
@@ -129,4 +131,3 @@ export function TranscriptionStream() {
     </div>
   );
 }
-

@@ -128,6 +128,30 @@ export function TranscriptionStream() {
           </div>
         </div>
       )}
+
+      {session.status === 'error' && (
+        <div className="px-4 py-2 bg-red-50 dark:bg-red-950 border-t border-red-200 dark:border-red-900">
+          <div className="flex items-center space-x-2 text-sm text-red-800 dark:text-red-100">
+            <svg
+              className="w-4 h-4 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>
+              We hit a problem with real-time transcription. Your existing transcript and lecture
+              buddy cards are preserved, but new audio may not be processed.
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

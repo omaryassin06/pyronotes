@@ -1,4 +1,7 @@
 import type { GenerateResult } from '../../types';
+import { NotesView } from './NotesView';
+import { FlashcardsView } from './FlashcardsView';
+import { QuizView } from './QuizView';
 
 interface GenerateResultPanelProps {
   result: GenerateResult | null;
@@ -95,70 +98,17 @@ export function GenerateResultPanel({ result, onClose }: GenerateResultPanelProp
               </div>
             </div>
           ) : (
-            <div className="prose prose-sm dark:prose-invert max-w-none">
+            <div className="h-full">
               {result.type === 'notes' && (
-                <div className="space-y-4">
-                  <div className="bg-gradient-pyro-subtle dark:bg-pyro-950 p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold text-pyro-900 dark:text-pyro-100 mb-3">
-                      📚 Generated Study Notes
-                    </h3>
-                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                      {result.content}
-                    </p>
-                  </div>
-                </div>
+                <NotesView content={result.content} />
               )}
 
               {result.type === 'flashcards' && (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {/* Mock flashcard display */}
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="border-2 border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:border-pyro-500 transition-colors cursor-pointer"
-                    >
-                      <div className="font-semibold text-gray-900 dark:text-white mb-2">
-                        Question {i}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        Click to reveal answer
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <FlashcardsView rawContent={result.content} />
               )}
 
               {result.type === 'quiz' && (
-                <div className="space-y-6">
-                  {/* Mock quiz display */}
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="border border-gray-200 dark:border-gray-800 rounded-lg p-4"
-                    >
-                      <div className="font-semibold text-gray-900 dark:text-white mb-3">
-                        {i}. Sample quiz question {i}?
-                      </div>
-                      <div className="space-y-2">
-                        {['A', 'B', 'C', 'D'].map((option) => (
-                          <label
-                            key={option}
-                            className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
-                          >
-                            <input
-                              type="radio"
-                              name={`question-${i}`}
-                              className="w-4 h-4 text-pyro-600 focus:ring-pyro-500"
-                            />
-                            <span className="text-gray-700 dark:text-gray-300">
-                              Option {option}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <QuizView rawContent={result.content} />
               )}
             </div>
           )}
@@ -172,15 +122,9 @@ export function GenerateResultPanel({ result, onClose }: GenerateResultPanelProp
             >
               Close
             </button>
-            <button
-              className="px-6 py-2 rounded-lg bg-gradient-pyro text-white font-medium hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pyro-500"
-            >
-              Download
-            </button>
           </div>
         )}
       </div>
     </div>
   );
 }
-

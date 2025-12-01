@@ -281,24 +281,41 @@ export function TranscriptionProvider({ children }: { children: ReactNode }) {
 
   const saveRecording = async (title: string, folderId?: string) => {
     if (!session || session.status !== 'done') return;
-    
+
+    // Optimistically mark the session as saving, but keep all data
     setSession({ ...session, status: 'saving' });
-    
+
     try {
-      // Update the lecture with title and folder
+      // Update the lecture with title and folder on the backend
       await api.updateLecture(session.id, {
         title,
         folderId,
         status: 'ready',
       });
-      
+
       console.log('Recording saved successfully');
-      
-      // Reset session after successful save
-      resetSession();
+
+      // Keep the session in memory so the UI (transcript + lecture buddy)
+      // stays visible until the user explicitly dismisses it
+      setSession((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: 'done',
+            }
+          : prev
+      );
     } catch (error) {
       console.error('Failed to save recording:', error);
-      setSession({ ...session, status: 'error' });
+      // Preserve whatever data we already have but surface the error state
+      setSession((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: 'error',
+            }
+          : prev
+      );
     }
   };
 

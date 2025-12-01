@@ -3,6 +3,53 @@ import type { Lecture, Folder, GenerateRequest, StreamEvent } from '../types';
 const API_BASE_URL = 'http://localhost:8000/api';
 const WS_BASE_URL = 'ws://localhost:8000/api';
 
+// Shape returned by the backend for lectures (snake_case)
+type LectureApi = {
+  id: string;
+  title: string;
+  folder_id?: string | null;
+  duration_sec?: number | null;
+  audio_path?: string | null;
+  created_at: string;
+  status: string;
+};
+
+function mapLectureFromApi(api: LectureApi): Lecture {
+  return {
+    id: api.id,
+    title: api.title,
+    folderId: api.folder_id ?? undefined,
+    durationSec: api.duration_sec ?? undefined,
+    audioPath: api.audio_path ?? undefined,
+    createdAt: api.created_at,
+    status: api.status as Lecture['status'],
+  };
+}
+
+function mapLectureToApiInput(
+  data: Partial<Omit<Lecture, 'id' | 'createdAt'>>,
+): Partial<LectureApi> {
+  const payload: Partial<LectureApi> = {};
+
+  if (data.title !== undefined) {
+    (payload as any).title = data.title;
+  }
+  if ('folderId' in data) {
+    (payload as any).folder_id = data.folderId ?? null;
+  }
+  if (data.durationSec !== undefined) {
+    (payload as any).duration_sec = data.durationSec;
+  }
+  if (data.audioPath !== undefined) {
+    (payload as any).audio_path = data.audioPath;
+  }
+  if (data.status !== undefined) {
+    (payload as any).status = data.status;
+  }
+
+  return payload;
+}
+
 export const api = {
   // Transcription endpoints
   async startTranscription(): Promise<{ id: string }> {
@@ -36,42 +83,58 @@ export const api = {
     onEvent: (event: StreamEvent) => void
   ): { unsubscribe: () => void; sendTranscript: (text: string) => void } {
     const ws = new WebSocket(`${WS_BASE_URL}/transcriptions/${id}/stream`);
-    
+
     ws.onopen = () => {
       console.log('WebSocket connected for session:', id);
     };
-    
+
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
         onEvent(data as StreamEvent);
       } catch (e) {
         console.error('Failed to parse WebSocket message:', e);
+        onEvent({
+          type: 'error',
+          message: 'Received malformed data from transcription stream',
+        });
       }
     };
-    
+
     ws.onerror = (error) => {
       console.error('WebSocket error:', error);
-      onEvent({ type: 'error', message: 'Connection error' });
+      onEvent({
+        type: 'error',
+        message: 'Real-time connection error. Your current transcript is safe, but new audio may not be processed.',
+      });
     };
-    
-    ws.onclose = () => {
-      console.log('WebSocket closed');
+
+    ws.onclose = (event) => {
+      console.log('WebSocket closed', { code: event.code, reason: event.reason, wasClean: event.wasClean });
+      if (!event.wasClean) {
+        onEvent({
+          type: 'error',
+          message: 'Real-time connection closed unexpectedly. You can stop recording and save what you have.',
+        });
+      }
     };
-    
+
     const sendTranscript = (text: string) => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: 'transcript_chunk', text }));
       }
     };
-    
+
     const unsubscribe = () => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'finalize' }));
+      try {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'finalize' }));
+        }
+      } finally {
+        ws.close();
       }
-      ws.close();
     };
-    
+
     return { unsubscribe, sendTranscript };
   },
 
@@ -96,7 +159,8 @@ export const api = {
     
     const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch lectures');
-    return response.json();
+    const data: LectureApi[] = await response.json();
+    return data.map(mapLectureFromApi);
   },
 
   async createLecture(data: Omit<Lecture, 'id' | 'createdAt'>): Promise<Lecture> {
@@ -105,10 +169,11 @@ export const api = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(mapLectureToApiInput(data)),
     });
     if (!response.ok) throw new Error('Failed to create lecture');
-    return response.json();
+    const json: LectureApi = await response.json();
+    return mapLectureFromApi(json);
   },
 
   async updateLecture(id: string, data: Partial<Omit<Lecture, 'id' | 'createdAt'>>): Promise<Lecture> {
@@ -117,10 +182,11 @@ export const api = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(mapLectureToApiInput(data)),
     });
     if (!response.ok) throw new Error('Failed to update lecture');
-    return response.json();
+    const json: LectureApi = await response.json();
+    return mapLectureFromApi(json);
   },
 
   async deleteLecture(id: string): Promise<void> {

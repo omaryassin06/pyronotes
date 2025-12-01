@@ -481,9 +481,12 @@ export function RecorderPanel() {
         )}
 
         {/* Transcription Stream */}
-        {session && (session.status === 'recording' || session.status === 'transcribing' || session.status === 'done') && !showGenerateOptions && (
-          <TranscriptionStream />
-        )}
+        {session &&
+          (session.status === 'recording' ||
+            session.status === 'transcribing' ||
+            session.status === 'done') && (
+            <TranscriptionStream />
+          )}
       </div>
     </div>
   );

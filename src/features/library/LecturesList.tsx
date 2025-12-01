@@ -17,6 +17,7 @@ export function LecturesList({ lectures }: LecturesListProps) {
   const [generateModalOpen, setGenerateModalOpen] = useState(false);
   const [generateResult, setGenerateResult] = useState<GenerateResult | null>(null);
   const [manageFolderModalOpen, setManageFolderModalOpen] = useState(false);
+  const [expandedAudioId, setExpandedAudioId] = useState<string | null>(null);
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -161,13 +162,41 @@ export function LecturesList({ lectures }: LecturesListProps) {
                   )}
                 </div>
 
-                {/* Audio Player */}
-                {lecture.status === 'ready' && (
-                  <AudioPlayer lectureId={lecture.id} lectureTitle={lecture.title} />
+                {/* Audio Player - collapsible per lecture */}
+                {lecture.status === 'ready' && expandedAudioId === lecture.id && (
+                  <div className="mt-3">
+                    <AudioPlayer lectureId={lecture.id} lectureTitle={lecture.title} />
+                  </div>
                 )}
               </div>
 
               <div className="flex items-center space-x-2 ml-4">
+                {/* Toggle audio visibility */}
+                <button
+                  onClick={() =>
+                    setExpandedAudioId((current) =>
+                      current === lecture.id ? null : lecture.id
+                    )
+                  }
+                  disabled={lecture.status !== 'ready'}
+                  className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pyro-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={expandedAudioId === lecture.id ? 'Hide audio player' : 'Show audio player'}
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H3a1 1 0 01-1-1V8a1 1 0 011-1h1.586l3.707-3.707a1 1 0 011.09-.217zM15 8a3 3 0 010 6m2-8a5 5 0 010 10"
+                    />
+                  </svg>
+                </button>
+
                 <button
                   onClick={() => {
                     setSelectedLecture(lecture);
